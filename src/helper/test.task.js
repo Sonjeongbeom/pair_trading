@@ -12,6 +12,7 @@ class TestTask {
     try {
       // 1. make child process command
       console.log('Start Test Task.');
+      // command에 api key 정보를 인자로 넣어서 줄까 ..?
       const command = `python3 pair_trading_py/test.py`;
       // 2. execute shell command
       await ShellCommand.execCommand(command);
