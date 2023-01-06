@@ -85,7 +85,7 @@ def main():
     ###pair_selection 병렬처리####
     @ray.remote
     def pair_selection(ticker,y=future_panel_minute,x=coin_panel_minute):
-        y,x=np.log(y[ticker].values),np.log(x[ticker].values)
+        y,x=y[ticker].values,x[ticker].values
         if coint(y,x,maxlag=12)[0]<-2.58:
             results=sm.OLS(y,x).fit()
             beta=results.params[0]
@@ -171,7 +171,7 @@ def main():
                 beta,threshold=bnd[1],bnd[4]
                 beta_dict[ticker]=beta
                 if (balance['USDT']['free']>100) and (balance_futures['USDT']['free']>100):
-                    if np.log((get_futures_price(binance_futures=binance_futures,ticker=ticker))-np.log(get_spot_price(binance=binance,ticker=ticker))*beta_dict[ticker]>threshold) and (funding[ticker]>funding_target):
+                    if (get_futures_price(binance_futures=binance_futures,ticker=ticker)-get_spot_price(binance=binance,ticker=ticker))*beta_dict[ticker]>threshold and (funding[ticker]>funding_target):
                         if (balance['USDT']['free']>get_spot_price(binance=binance,ticker=ticker)) and (balance_futures['USDT']['free']>get_futures_price(binance_futures=binance_futures,ticker=ticker)):
                             if np.sign(beta_dict[ticker])>0:
                                 try:
@@ -212,7 +212,7 @@ def main():
         if len(buy_tickers)!=0:
             print('청산 조건에 맞는지 검증합니다\n')
             for ticker in tqdm(buy_tickers):
-                if np.log(get_futures_price(binance_futures=binance_futures,ticker=ticker))-np.log(get_spot_price(binance=binance,ticker=ticker))*beta_dict[ticker]<=0 or funding[ticker]<0:
+                if get_futures_price(binance_futures=binance_futures,ticker=ticker)-get_spot_price(binance=binance,ticker=ticker)*beta_dict[ticker]<=0 or funding[ticker]<0:
                     try:
                         print(f'청산 티커: {ticker}')
                         close_short=future_close_position(binance_futures=binance_futures,ticker=ticker,amount=future_pair[ticker])
