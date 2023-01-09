@@ -168,7 +168,7 @@ def main():
             for ticker in new_tickers:
                 bnd=[new for new in result if ticker == new[0]]
                 bnd=bnd[0]
-                beta,threshold=bnd[1],bnd[4]
+                beta,threshold=bnd[1],bnd[4] + 2 * 25 * 0.0014
                 beta_dict[ticker]=beta
                 if (balance['USDT']['free']>100) and (balance_futures['USDT']['free']>100):
                     if (get_futures_price(binance_futures=binance_futures,ticker=ticker)-get_spot_price(binance=binance,ticker=ticker))*beta_dict[ticker]>threshold and (funding[ticker]>funding_target):
