@@ -18,14 +18,18 @@ import os
 import ray
 import logging
 import warnings
-
+from dotenv import load_dotenv
 
 def main():
     warnings.filterwarnings('ignore')
 
-    apiKey = os.environ['apiKey']
-    secret = os.environ['secret']
-    
+    load_dotenv(verbose = True)
+
+    # apiKey = os.environ['apiKey']
+    # secret = os.environ['secret']
+
+    apiKey = os.getenv('apiKey')
+    secret = os.getenv('secret')
 
 
     """
@@ -110,6 +114,12 @@ def main():
     zero_dict=dict()
     coin_panel_minute = coin_panel_minute.iloc[2:]
     future_panel_minute = future_panel_minute.iloc[2:]
+    coin_panel_minute.dropna(inplace=True,axis=1)
+    future_panel_minute.dropna(inplace=True,axis=1)
+    universe=set(coin_panel_minute.columns).intersection(set(future_panel_minute.columns))
+    tickers = list(universe)
+    coin_panel_minute=coin_panel_minute[universe]
+    future_panel_minute=future_panel_minute[universe]
     for ticker in tickers:
         funding[ticker]=get_funding_rate(binance_futures,ticker=ticker)
         velo_dict[ticker]=get_velo(get_spread(future_panel_minute[ticker].values,coin_panel_minute[ticker].values))
@@ -124,6 +134,7 @@ def main():
         ray.init(ignore_reinit_error=True,logging_level=logging.ERROR)
         time.sleep(10)
         velo_ticker=sorted(list(velo_dict.values()))
+        print(list(zero_dict.values()))
         zero_ticker=sorted(list(zero_dict.values()),reverse=True)
         balance = binance.fetch_balance()
         balance_futures=binance_futures.fetch_balance()
